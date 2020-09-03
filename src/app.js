@@ -32,16 +32,17 @@ const App = () => {
             </BrowserRouter>
         </React.StrictMode >)
 }
+
 const RouterHeader = () => {
     return (
         <div className="routerHeader">
             <nav>
                 <ul>
                     <li>
-                        <NavLink exact  to="/">Converter</NavLink>
+                        <NavLink exact to="/">Converter</NavLink>
                     </li>
                     <li>
-                        <NavLink exact  to="/history">Conversion history</NavLink>
+                        <NavLink exact to="/history">Conversion history</NavLink>
                     </li>
                 </ul>
             </nav>
@@ -54,9 +55,9 @@ const RouterBody = () => {
     const [conversionHistory, setConversionHistory] = useState([])
     const routerHistory = useHistory()
     useEffect(() => {
+        localStorage.conversionHistory && setConversionHistory(JSON.parse(localStorage.conversionHistory))
         fetchCurrencies().then((data) => {
             setCurrencies({ ...data.results })
-            console.log(currencies)
         })
     }, [])
     const onConverterSubmit = (data) => {
@@ -64,18 +65,23 @@ const RouterBody = () => {
             const newConversionHistory = [...conversionHistory]
             newConversionHistory.push(data)
             setConversionHistory(newConversionHistory)
+            localStorage.setItem('conversionHistory', JSON.stringify(newConversionHistory))
             routerHistory.push("/history")
         }
+    }
+    const onClearHistory = () => {
+        setConversionHistory([])
+        localStorage.setItem('conversionHistory', "[]")
     }
     return (
         <div className="routerBody">
             <div className="wrapper">
                 <Switch>
                     <Route path="/history">
-                        <ConversionHistory records={conversionHistory} />
+                        <ConversionHistory records={conversionHistory} clearHistory={onClearHistory} />
                     </Route>
                     <Route path="/">
-                        <Converter currencies={currencies} onSubmit={onConverterSubmit} />
+                        <Converter currencies={currencies} onSubmit={onConverterSubmit} getExchangeRate={fetchExchangeRate} />
                     </Route>
                 </Switch>
             </div>
