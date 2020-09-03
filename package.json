@@ -4,7 +4,8 @@
     "react-dom": "16.13.1",
     "react-router": "5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-final-form": "6.5.1"
+    "react-final-form": "^6.5.1",
+    "final-form": "^4.20.1"
   },
   "scripts": {
     "start": "webpack-dev-server --open"
