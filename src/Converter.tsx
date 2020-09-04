@@ -1,18 +1,32 @@
 import React, { useState } from 'react'
 import { Form, Field } from 'react-final-form'
+import { ConversionRecord, Currency } from './types'
 
+interface ConverterProps {
+    currencies: Currency[],
+    onSubmit: Function,
+    getExchangeRate: Function
+}
+interface ConverterFormData {
+    value: number,
+    currFrom: string,
+    currTo: string,
+}
 
-const Converter = (props) => {
+const Converter = (props: ConverterProps) => {
     const { currencies, onSubmit, getExchangeRate } = props
 
-    const handleSubmit = (formData) => {
+    const handleSubmit = (formData: ConverterFormData) => {
         //Get exchange rate and update state
-        getExchangeRate(formData.currFrom, formData.currTo).then((exchangeRate) => { handleStateUpdate(formData, exchangeRate) })
+        getExchangeRate(formData.currFrom, formData.currTo).then((exchangeRate: number) => {
+            handleStateUpdate(formData, exchangeRate)
+
+        })
     }
-    const handleStateUpdate = (formData, exchangeRate) => {
+    const handleStateUpdate = (formData: ConverterFormData, exchangeRate: number) => {
         //Parse date and time to string
         const date = new Date()
-        const prependZero = (number) => {
+        const prependZero = (number: number) => {
             return String(number).padStart(2, '0');
         }
         const composedDate = prependZero(date.getDate()) + "-" + prependZero(date.getMonth()) + "-" + prependZero(date.getFullYear())
@@ -25,18 +39,23 @@ const Converter = (props) => {
             date: composedDate,
             time: composedTime
         }
-        //Dispatch record and redirect to history
+        //Dispatch record
         onSubmit(newRecord)
-        routerHistory.push("/history")
     }
 
-    const renderCurrencyOptions = (options) => {
+    const renderCurrencyOptions = (options: Currency[]) => {
         return (
             <React.Fragment>
-                {Object.keys(options).sort(((a, b) => { return a.localeCompare(b) })).map((key) => {
-                    return (<option value={options[key].id}>{options[key].id}</option>)
+                {options.map((key) => {
+                    return (<option value={key.id} title={key.fullName}>{key.id}</option>)
                 })}
             </React.Fragment>
+
+            // <React.Fragment>
+            //     {Object.keys(options).sort(((a, b) => { return a.localeCompare(b) })).map((key) => {
+            //         return (<option value={options[key].id}>{options[key].id}</option>)
+            //     })}
+            // </React.Fragment>
         )
     }
 

@@ -1,26 +1,37 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+//const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
-    entry: './src/app.js',
+    entry: "./src/app.tsx",
+    target: "web",
+    mode: "development",
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'index_bundle.js'
+        path: path.resolve(__dirname, "build"),
+        filename: "bundle.js",
+    },
+    resolve: {
+        extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
     },
     module: {
         rules: [
-            { test: /\.(js)$/, use: 'babel-loader' },
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] }
-        ]
+            {
+                test: /\.(ts|tsx)$/,
+                use: "ts-loader",
+            },
+            {
+                test: /\.js$/,
+                use: "babel-loader",
+            },
+            {
+                test: /\.css$/,
+                use: ["style-loader",
+                    "css-loader"]
+            },
+        ],
     },
-    devServer: {
-        historyApiFallback: true,
-    },
-    mode: 'development',
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: path.resolve(__dirname, "src", "index.html"),
         })
-    ]
-
-}
+    ],
+};
