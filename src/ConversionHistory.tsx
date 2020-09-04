@@ -5,7 +5,7 @@ interface ConversionHistoryProps {
     onClearHistory: Function
 }
 
-const ConversionHistory = (props: ConversionHistoryProps) => {
+const ConversionHistory = (props: ConversionHistoryProps): JSX.Element => {
     const renderHistoryRecords = (records: ConversionRecord[]) => {
         if (!records || records.length == 0) {
             return (
@@ -13,14 +13,14 @@ const ConversionHistory = (props: ConversionHistoryProps) => {
                     <td colSpan={6}>No records to display.</td>
                 </tr>)
         }
-        return (records.map((record: ConversionRecord) => {
+        return ([...records].reverse().map((record: ConversionRecord) => {
             const { value, currFrom, currTo, result, date, time } = record
             return (
-                <tr>
-                    <td>{value}</td>
+                <tr className="historyRecord">
+                    <td>{value.toFixed(2)}</td>
                     <td>{currFrom}</td>
                     <td>{currTo}</td>
-                    <td>{result}</td>
+                    <td>{result.toFixed(2)}</td>
                     <td>{date}</td>
                     <td>{time}</td>
                 </tr>)

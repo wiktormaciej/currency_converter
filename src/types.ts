@@ -10,9 +10,5 @@ export interface ConversionRecord {
   result: number;
   date: string;
   time: string;
-}
-
-export interface IDataProvider {
-  getExchangeRate(from: string, to: string): Promise<number>;
-  getCurrencies(): Promise<Currency[]>;
+  exchangeRate: number;
 }

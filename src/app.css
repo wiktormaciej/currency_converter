@@ -23,7 +23,9 @@ body {
   max-width: 50%;
   min-width: 500px;
 }
-
+.error {
+  color: crimson;
+}
 /*Navbar style*/
 nav {
   overflow: hidden;
@@ -112,6 +114,9 @@ th {
 td {
   padding: 5px;
   text-align: center;
+}
+tr.historyRecord:first-child {
+  background-color: lightgray;
 }
 .lastCol {
   border-right: none;

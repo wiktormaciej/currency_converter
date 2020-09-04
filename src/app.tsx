@@ -7,12 +7,12 @@ import Converter, { ConverterFormData } from './Converter'
 import { Currency, ConversionRecord } from './types'
 import './app.css'
 import CONFIG from '../config/config'
-
+const { EXCHANGE_RATE_API, CURRENCIES_API, MAX_HISTORY_LENGHT } = CONFIG
 
 //Fetch functions
 const fetchCurrencies = (): Promise<Currency[] | never> => {
-    return new Promise(resolve => {
-        fetch(CONFIG["currenciesApi"])
+    return new Promise((resolve, reject) => {
+        fetch(CURRENCIES_API)
             .then(response => response.json())
             .then(data => {
                 //Parse currencies response
@@ -25,18 +25,20 @@ const fetchCurrencies = (): Promise<Currency[] | never> => {
                     })
                 }
                 resolve(newCurrencies)
-            }).catch((e) => {
-                throw new Error('External server is down, try again later.')
+            })
+            .catch((e) => {
+                reject(new Error('External server is down, try again later.'))
             })
     })
 }
 const fetchExchangeRate = (from: string, to: string): Promise<number> => {
-    return new Promise<number>(resolve => {
-        fetch(CONFIG["converterApi"] + `&symbols=${from},${to}`)
+    return new Promise<number>((resolve, reject) => {
+        fetch(EXCHANGE_RATE_API + `&symbols=${from},${to}`)
             .then(response => response.json())
             .then(data => resolve((data.rates[to] / data.rates[from]))) //calculate rate from two rates based on USD - it may be not as precise as it should be
-    }).catch((e) => {
-        throw new Error('External server is down, try again later.')
+            .catch((e) => {
+                reject(new Error('External server is down, try again later.'))
+            })
     })
 }
 
@@ -97,34 +99,61 @@ const RouterBody = (): JSX.Element => {
         localStorage.setItem('currencies', JSON.stringify(currencies))
     }, [currencies])
 
-    const onConverterSubmit = (data: ConversionRecord) => {
-        if (data) {
+    const onConverterSubmit = (formData: ConversionRecord) => {
+        //Get exchange rate
+        fetchExchangeRate(formData.currFrom, formData.currTo).then((exchangeRate: number) => {
+            //Parse current date and time to string
+            const date = new Date()
+            const prependZero = (number: number) => {
+                return String(number).padStart(2, '0');
+            }
+            const composedDate = prependZero(date.getDate()) + "-" + prependZero(date.getMonth()) + "-" + prependZero(date.getFullYear())
+            const composedTime = prependZero(date.getHours()) + ":" + prependZero(date.getMinutes())
+            //Create new record
+            const newHistoryRecord: ConversionRecord = {
+                ...formData,
+                exchangeRate,
+                result: (Math.round(formData.value * exchangeRate * 1000) / 1000),
+                date: composedDate,
+                time: composedTime,
+                value: (Math.round(formData.value * 100) / 100)
+            }
+            //Update state and redirect to history
             const newConversionHistory: ConversionRecord[] = [...conversionHistory]
-            newConversionHistory.push(data)
+            newConversionHistory.push(newHistoryRecord)
+            //Trim an array if needed
+            if (newConversionHistory.length > MAX_HISTORY_LENGHT) {
+                newConversionHistory.shift()
+            }
             setConversionHistory(newConversionHistory)
             routerHistory.push("/history")
-        }
+        }).catch((error: Error) => {
+            setError(error)
+        })
     }
     const onClearHistory = () => {
         setConversionHistory([])
     }
+
+    //Returns
     if (error) {
-        return (<div>
-            {error.message}
-        </div>)
+        return (
+            <div className="routerBody">
+                <span className="error">
+                    {error.message}
+                </span>
+            </div>)
     }
     return (
         <div className="routerBody">
-            <div className="wrapper">
-                <Switch>
-                    <Route path="/history">
-                        <ConversionHistory records={conversionHistory} onClearHistory={onClearHistory} />
-                    </Route>
-                    <Route path="/">
-                        <Converter currencies={currencies} onSubmit={onConverterSubmit} getExchangeRate={fetchExchangeRate} />
-                    </Route>
-                </Switch>
-            </div>
+            <Switch>
+                <Route path="/history">
+                    <ConversionHistory records={conversionHistory} onClearHistory={onClearHistory} />
+                </Route>
+                <Route path="/">
+                    <Converter currencies={currencies} onSubmit={onConverterSubmit} />
+                </Route>
+            </Switch>
         </div>)
 }
 
