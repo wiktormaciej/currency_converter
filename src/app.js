@@ -7,6 +7,7 @@ import Converter from './Converter.js'
 import './app.css'
 import CONFIG from '../config/config.js'
 
+//Fetch functions
 const fetchCurrencies = () => {
     return new Promise(resolve => {
         fetch(CONFIG["currenciesApi"])
@@ -20,9 +21,13 @@ const fetchExchangeRate = (currFrom, currTo) => {
         fetch(CONFIG["converterApi"] + `&q=${currFrom}_${currTo}`)
             .then(response => response.json())
             .then(data => resolve(data[`${currFrom}_${currTo}`]))
+    }).catch((e) => {
+        throw new Error('External server is down, try again later.')
     })
 }
 
+
+//Main app function
 const App = () => {
     return (
         < React.StrictMode >
@@ -33,6 +38,8 @@ const App = () => {
         </React.StrictMode >)
 }
 
+
+//Header component
 const RouterHeader = () => {
     return (
         <div className="routerHeader">
@@ -50,28 +57,33 @@ const RouterHeader = () => {
     )
 }
 
+//Body component
 const RouterBody = () => {
     const [currencies, setCurrencies] = useState(null)
     const [conversionHistory, setConversionHistory] = useState([])
     const routerHistory = useHistory()
     useEffect(() => {
+        //Load conversion history from  local storage
         localStorage.conversionHistory && setConversionHistory(JSON.parse(localStorage.conversionHistory))
+        //Fetch currencies
         fetchCurrencies().then((data) => {
             setCurrencies({ ...data.results })
         })
     }, [])
+    useEffect(() => {
+        localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory))
+    }, [conversionHistory])
+
     const onConverterSubmit = (data) => {
         if (data) {
             const newConversionHistory = [...conversionHistory]
             newConversionHistory.push(data)
             setConversionHistory(newConversionHistory)
-            localStorage.setItem('conversionHistory', JSON.stringify(newConversionHistory))
             routerHistory.push("/history")
         }
     }
     const onClearHistory = () => {
         setConversionHistory([])
-        localStorage.setItem('conversionHistory', "[]")
     }
     return (
         <div className="routerBody">

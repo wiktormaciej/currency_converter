@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import { Form, Field } from 'react-final-form'
-import CONFIG from '../config/config.js'
 
 
 const Converter = (props) => {
     const { currencies, onSubmit, getExchangeRate } = props
 
     const handleSubmit = (formData) => {
+        //Get exchange rate and update state
         getExchangeRate(formData.currFrom, formData.currTo).then((exchangeRate) => { handleStateUpdate(formData, exchangeRate) })
     }
     const handleStateUpdate = (formData, exchangeRate) => {
@@ -18,17 +17,19 @@ const Converter = (props) => {
         }
         const composedDate = prependZero(date.getDate()) + "-" + prependZero(date.getMonth()) + "-" + prependZero(date.getFullYear())
         const composedTime = prependZero(date.getHours()) + ":" + prependZero(date.getMinutes())
-
-        let newResult = {
+        //Create new record
+        let newRecord = {
             ...formData,
             exchangeRate,
             result: (formData.value * exchangeRate).toFixed(3),
             date: composedDate,
             time: composedTime
         }
-        onSubmit(newResult)
+        //Dispatch record and redirect to history
+        onSubmit(newRecord)
         routerHistory.push("/history")
     }
+
     const renderCurrencyOptions = (options) => {
         return (
             <React.Fragment>
