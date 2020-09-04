@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Form, Field } from 'react-final-form'
-import { ConversionRecord, Currency } from './types'
+import { Currency } from './types'
 
 interface ConverterProps {
     currencies: Currency[],
     onSubmit: Function,
     getExchangeRate: Function
 }
-interface ConverterFormData {
+export interface ConverterFormData {
     value: number,
     currFrom: string,
     currTo: string,
@@ -74,7 +74,6 @@ const Converter = (props: ConverterProps) => {
                         <Field className="field" name="currTo" component="select" initialValue="EUR" >
                             {renderCurrencyOptions(currencies)}
                         </Field>
-
                         <button className="submit" type="submit">{">"}</button>
                     </form>
                 )}
