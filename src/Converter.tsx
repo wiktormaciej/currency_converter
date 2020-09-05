@@ -26,7 +26,7 @@ const Converter = (props: ConverterProps): JSX.Element => {
         return (
             <React.Fragment>
                 {options.map((option) => {
-                    return (<option value={option.id} title={option.fullName}>{option.id}</option>)
+                    return (<option key={"curr" + option.id} value={option.id} title={option.fullName}>{option.id}</option>)
                 })}
             </React.Fragment>
         )
