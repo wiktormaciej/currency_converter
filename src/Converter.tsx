@@ -1,6 +1,5 @@
 import React from 'react'
 import { Form, Field } from 'react-final-form'
-import { Currency } from './types'
 
 interface ConverterProps {
     currencies: Currency[],
@@ -10,6 +9,10 @@ export interface ConverterFormData {
     value: number,
     currFrom: string,
     currTo: string,
+}
+export interface Currency {
+    id: string;
+    fullName: string;
 }
 
 const Converter = (props: ConverterProps): JSX.Element => {

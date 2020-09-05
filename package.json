@@ -8,9 +8,7 @@
     "final-form": "^4.20.1"
   },
   "scripts": {
-    "start": "webpack-dev-server --open",
-    "start2": "webpack-dev-server --content-base ./dist --hot --inline --colors --port 3000",
-    "build": "webpack --config webpack.config.js --watch"
+    "start": "webpack-dev-server --open"
   },
   "main": "app.tsx",
   "babel": {
@@ -25,6 +23,7 @@
     "@babel/preset-react": "^7.10.4",
     "babel-loader": "^8.1.0",
     "css-loader": "^4.2.2",
+    "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.3.0",
     "style-loader": "^1.2.1",
     "webpack": "^4.44.1",

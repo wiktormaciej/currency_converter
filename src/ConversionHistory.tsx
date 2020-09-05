@@ -1,9 +1,18 @@
 import React from 'react'
-import { ConversionRecord } from './types'
 interface ConversionHistoryProps {
     records: ConversionRecord[],
     onClearHistory: Function
 }
+export interface ConversionRecord {
+    value: number;
+    currFrom: string;
+    currTo: string;
+    result: number;
+    date: string;
+    time: string;
+    exchangeRate: number;
+}
+
 
 const ConversionHistory = (props: ConversionHistoryProps): JSX.Element => {
     const renderHistoryRecords = (records: ConversionRecord[]) => {

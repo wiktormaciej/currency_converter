@@ -2,9 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Switch, Route, NavLink, useHistory } from 'react-router-dom'
-import ConversionHistory from './ConversionHistory'
-import Converter, { ConverterFormData } from './Converter'
-import { Currency, ConversionRecord } from './types'
+import ConversionHistory, { ConversionRecord } from './ConversionHistory'
+import Converter, { ConverterFormData, Currency } from './Converter'
 import './app.css'
 import CONFIG from '../config/config'
 const { EXCHANGE_RATE_API, CURRENCIES_API, MAX_HISTORY_LENGHT } = CONFIG
@@ -99,7 +98,7 @@ const RouterBody = (): JSX.Element => {
         localStorage.setItem('currencies', JSON.stringify(currencies))
     }, [currencies])
 
-    const onConverterSubmit = (formData: ConversionRecord) => {
+    const onConverterSubmit = (formData: ConverterFormData) => {
         //Get exchange rate
         fetchExchangeRate(formData.currFrom, formData.currTo).then((exchangeRate: number) => {
             //Parse current date and time to string
